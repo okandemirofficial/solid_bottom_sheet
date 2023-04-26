@@ -90,8 +90,8 @@ class SolidBottomSheet extends StatefulWidget {
       this.controller = controller;
     }
 
-    controller?.height = showOnAppear ? maxHeight : minHeight;
-    controller?.smoothness = smoothness;
+    this.controller.height = showOnAppear ? maxHeight : minHeight;
+    this.controller.smoothness = smoothness;
   }
 
   @override

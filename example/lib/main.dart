@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -11,24 +13,27 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      // ignore: prefer_const_constructors
       home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  SolidController _controller = SolidController();
+  final SolidController _controller = SolidController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Solid bottom sheet example"),
+        title: const Text("Solid bottom sheet example"),
       ),
       body: ListView.builder(
         itemCount: 20,
@@ -45,28 +50,26 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         "Flutter rules?",
-                        style: Theme.of(context).textTheme.title,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
                   ],
                 ),
-                ButtonTheme.bar(
-                  child: ButtonBar(
-                    children: <Widget>[
-                      FlatButton(
-                        child: const Text('NOPE'),
-                        onPressed: () {
-                          /* ... */
-                        },
-                      ),
-                      FlatButton(
-                        child: const Text('YEAH'),
-                        onPressed: () {
-                          /* ... */
-                        },
-                      ),
-                    ],
-                  ),
+                ButtonBar(
+                  children: <Widget>[
+                    ElevatedButton(
+                      child: const Text('NOPE'),
+                      onPressed: () {
+                        /* ... */
+                      },
+                    ),
+                    ElevatedButton(
+                      child: const Text('YEAH'),
+                      onPressed: () {
+                        /* ... */
+                      },
+                    )
+                  ],
                 ),
               ],
             ),
@@ -79,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
         headerBar: Container(
           color: Theme.of(context).primaryColor,
           height: 50,
-          child: Center(
+          child: const Center(
             child: Text("Swipe me!"),
           ),
         ),
@@ -89,13 +92,13 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Center(
             child: Text(
               "Hello! I'm a bottom sheet :D",
-              style: Theme.of(context).textTheme.display1,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.stars),
+          child: const Icon(Icons.stars),
           onPressed: () {
             _controller.isOpened ? _controller.hide() : _controller.show();
           }),

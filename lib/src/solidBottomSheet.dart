@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../solid_bottom_sheet.dart';
-import 'smoothness.dart';
 
 class SolidBottomSheet extends StatefulWidget {
   // This controls the minimum height of the body. Must be greater or equal of
@@ -56,7 +55,7 @@ class SolidBottomSheet extends StatefulWidget {
   // from the app and don't depend of user's interaction.
   // can hide and show  methods plus have isOpened variable
   // to check widget visibility on a screen
-  SolidController? controller;
+  late final SolidController controller;
 
   // This method will be executed when the solid bottom sheet is completely
   // opened.
@@ -70,7 +69,7 @@ class SolidBottomSheet extends StatefulWidget {
     Key? key,
     required this.headerBar,
     required this.body,
-    this.controller,
+    SolidController? controller,
     this.minHeight = 0,
     this.maxHeight = 500,
     this.autoSwiped = true,
@@ -87,10 +86,12 @@ class SolidBottomSheet extends StatefulWidget {
         super(key: key) {
     if (controller == null) {
       this.controller = SolidController();
+    } else {
+      this.controller = controller;
     }
-    this.controller!.height =
-        this.showOnAppear ? this.maxHeight : this.minHeight;
-    this.controller!.smoothness = smoothness;
+
+    controller?.height = showOnAppear ? maxHeight : minHeight;
+    controller?.smoothness = smoothness;
   }
 
   @override
@@ -98,31 +99,31 @@ class SolidBottomSheet extends StatefulWidget {
 }
 
 class _SolidBottomSheetState extends State<SolidBottomSheet> {
-  bool? isDragDirectionUp;
+  bool isDragDirectionUp = false;
 
   void _onVerticalDragUpdate(data) {
     _setNativeSmoothness();
-    if (((widget.controller!.height - data.delta.dy) > widget.minHeight) &&
-        ((widget.controller!.height - data.delta.dy) < widget.maxHeight)) {
+    if (((widget.controller.height - data.delta.dy) > widget.minHeight) &&
+        ((widget.controller.height - data.delta.dy) < widget.maxHeight)) {
       isDragDirectionUp = data.delta.dy <= 0;
-      widget.controller!.height -= data.delta.dy;
+      widget.controller.height -= data.delta.dy;
     }
   }
 
   void _onVerticalDragEnd(data) {
     _setUsersSmoothness();
 
-    if (isDragDirectionUp! && widget.controller!.value)
+    if (isDragDirectionUp && widget.controller.value)
       _show();
-    else if (!isDragDirectionUp! && !widget.controller!.value)
+    else if (!isDragDirectionUp && !widget.controller.value)
       _hide();
     else
-      widget.controller!.value = isDragDirectionUp!;
+      widget.controller.value = isDragDirectionUp;
   }
 
   void _onTap() {
-    final bool isOpened = widget.controller!.height == widget.maxHeight;
-    widget.controller!.value = !isOpened;
+    final bool isOpened = widget.controller.height == widget.maxHeight;
+    widget.controller.value = !isOpened;
   }
 
   void Function()? _controllerListener;
@@ -130,11 +131,11 @@ class _SolidBottomSheetState extends State<SolidBottomSheet> {
   @override
   void initState() {
     super.initState();
-    widget.controller!.value = widget.showOnAppear;
+    widget.controller.value = widget.showOnAppear;
     _controllerListener = () {
-      widget.controller!.value ? _show() : _hide();
+      widget.controller.value ? _show() : _hide();
     };
-    widget.controller!.addListener(_controllerListener!);
+    widget.controller.addListener(_controllerListener!);
   }
 
   @override
@@ -143,8 +144,7 @@ class _SolidBottomSheetState extends State<SolidBottomSheet> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         GestureDetector(
-          onVerticalDragUpdate:
-              widget.canUserSwipe ? _onVerticalDragUpdate : null,
+          onVerticalDragUpdate: widget.canUserSwipe ? _onVerticalDragUpdate : null,
           onVerticalDragEnd: widget.autoSwiped ? _onVerticalDragEnd : null,
           onTap: widget.toggleVisibilityOnTap ? _onTap : null,
           child: Container(
@@ -161,19 +161,16 @@ class _SolidBottomSheetState extends State<SolidBottomSheet> {
           ),
         ),
         StreamBuilder<double>(
-          stream: widget.controller!.heightStream,
-          initialData: widget.controller!.height,
+          stream: widget.controller.heightStream,
+          initialData: widget.controller.height,
           builder: (_, snapshot) {
             return AnimatedContainer(
               curve: Curves.easeOut,
-              duration:
-                  Duration(milliseconds: widget.controller!.smoothness!.value),
+              duration: Duration(milliseconds: widget.controller.smoothness!.value),
               height: snapshot.data,
               child: GestureDetector(
-                onVerticalDragUpdate:
-                    widget.draggableBody ? _onVerticalDragUpdate : null,
-                onVerticalDragEnd:
-                    widget.autoSwiped ? _onVerticalDragEnd : null,
+                onVerticalDragUpdate: widget.draggableBody ? _onVerticalDragUpdate : null,
+                onVerticalDragEnd: widget.autoSwiped ? _onVerticalDragEnd : null,
                 onTap: widget.toggleVisibilityOnTap ? _onTap : null,
                 child: widget.body,
               ),
@@ -186,25 +183,25 @@ class _SolidBottomSheetState extends State<SolidBottomSheet> {
 
   void _hide() {
     if (widget.onHide != null) widget.onHide!();
-    widget.controller!.height = widget.minHeight;
+    widget.controller.height = widget.minHeight;
   }
 
   void _show() {
     if (widget.onShow != null) widget.onShow!();
-    widget.controller!.height = widget.maxHeight;
+    widget.controller.height = widget.maxHeight;
   }
 
   @override
   void dispose() {
-    widget.controller!.removeListener(_controllerListener!);
+    widget.controller.removeListener(_controllerListener!);
     super.dispose();
   }
 
   void _setUsersSmoothness() {
-    widget.controller!.smoothness = widget.smoothness;
+    widget.controller.smoothness = widget.smoothness;
   }
 
   void _setNativeSmoothness() {
-    widget.controller!.smoothness = Smoothness.withValue(5);
+    widget.controller.smoothness = Smoothness.withValue(5);
   }
 }
